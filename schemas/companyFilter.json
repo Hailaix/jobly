@@ -1,0 +1,35 @@
+{
+    "$schema": "https://json-schema.org/draft/2019-09/schema",
+    "$id": "http://our.company.com/companyFilter.schema.json",
+    "type": "object",
+    "title": "Query String Schema",
+    "properties": {
+        "name": {
+            "type": "string",
+            "title": "name",
+            "examples": [
+                "c1"
+            ]
+        },
+        "minEmployees": {
+            "type": "integer",
+            "title": "minEmployees",
+            "examples": [
+                0
+            ]
+        },
+        "maxEmployees": {
+            "type": "integer",
+            "title": "maxEmployees",
+            "examples": [
+                10
+            ]
+        }
+    },
+    "additionalProperties": false,
+    "examples": [{
+        "name": "c1",
+        "minEmployees": 0,
+        "maxEmployees": 10
+    }]
+}
