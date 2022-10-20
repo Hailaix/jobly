@@ -141,6 +141,7 @@ describe("get", function () {
       lastName: "U1L",
       email: "u1@email.com",
       isAdmin: false,
+      jobs: [{ jobId: jobIds[0]}]
     });
   });
 
@@ -234,14 +235,14 @@ describe("remove", function () {
 
 describe("apply", function () {
   test("works", async function () {
-    const application = await User.apply("u1", jobIds[0]);
-    expect(application).toEqual({ username: "u1", jobId: jobIds[0] });
+    const application = await User.apply("u2", jobIds[0]);
+    expect(application).toEqual({ jobId: jobIds[0] });
 
     const dbCheck = await db.query(`
-    SELECT username, job_id AS "jobId"
+    SELECT job_id AS "jobId"
     FROM applications
-    WHERE username = $1`, ["u1"]);
-    expect(dbCheck.rows).toEqual([{ username: "u1", jobId: jobIds[0] }]);
+    WHERE username = $1`, ["u2"]);
+    expect(dbCheck.rows).toEqual([{ jobId: jobIds[0] }]);
   });
 
   test("not found if no such user", async function () {
@@ -264,8 +265,7 @@ describe("apply", function () {
 
   test("bad request with dupe apply", async function () {
     try {
-      await User.apply("u1", jobIds[0])
-      await User.apply("u1", jobIds[0])
+      await User.apply("u1", jobIds[0]);
       fail();
     } catch (err) {
       expect(err instanceof BadRequestError).toBeTruthy();

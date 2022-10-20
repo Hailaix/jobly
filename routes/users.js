@@ -63,7 +63,8 @@ router.get("/", ensureAdmin, async function (req, res, next) {
 
 /** GET /[username] => { user }
  *
- * Returns { username, firstName, lastName, isAdmin }
+ * Returns { username, firstName, lastName, isAdmin, jobs }
+ *  where jobs is [jobId ...]
  *
  * Authorization required: login as :username or Admin
  **/
@@ -115,6 +116,21 @@ router.delete("/:username", ensureUserOrAdmin, async function (req, res, next) {
     return res.json({ deleted: req.params.username });
   } catch (err) {
     return next(err);
+  }
+});
+
+/** POST /[username]/jobs/[id] => { application }
+ * 
+ *  Returns { applied: {username, jobId }}
+ *  Authorization required: login as :username or Admin
+ */
+router.post("/:username/jobs/:id", ensureUserOrAdmin, async function (req, res, next) {
+  try {
+    const applied = await User.apply(req.params.username, req.params.id);
+    return res.json({ applied });
+  }
+  catch (e) {
+    return next(e);
   }
 });
 

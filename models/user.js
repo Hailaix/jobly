@@ -124,20 +124,26 @@ class User {
    **/
 
   static async get(username) {
-    const userRes = await db.query(
-      `SELECT username,
-                  first_name AS "firstName",
-                  last_name AS "lastName",
-                  email,
-                  is_admin AS "isAdmin"
-           FROM users
-           WHERE username = $1`,
-      [username],
-    );
+    const userRes = await db.query(`
+    SELECT 
+      username,
+      first_name AS "firstName",
+      last_name AS "lastName",
+      email,
+      is_admin AS "isAdmin"
+    FROM users
+    WHERE username = $1`, [username]);
 
     const user = userRes.rows[0];
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
+
+    const applications = await db.query(`
+    SELECT job_id AS "jobId"
+    FROM applications
+    WHERE username = $1`, [username]);
+
+    user.jobs = applications.rows;
 
     return user;
   }
@@ -234,7 +240,7 @@ class User {
     const result = await db.query(`
     INSERT INTO applications (username, job_id)
     VALUES ($1, $2)
-    RETURNING username, job_id AS "jobId"`, [username, jobId]);
+    RETURNING job_id AS "jobId"`, [username, jobId]);
 
     return result.rows[0];
   }
