@@ -71,7 +71,6 @@ class Job {
         WHERE id = $1`,
             [id]);
         if (!result.rows[0]) {
-            console.log("here");
             throw new NotFoundError(`No job with id ${id}`);
         }
         return result.rows[0];
@@ -95,7 +94,6 @@ class Job {
         RETURNING id, title, salary, equity, company_handle AS "companyHandle"`
         const result = await db.query(query, [...values, id]);
         if (!result.rows[0]) {
-            console.log("here");
             throw new NotFoundError(`No job with id ${id}`);
         }
         return result.rows[0];
@@ -113,7 +111,6 @@ class Job {
         RETURNING id`, [id]);
 
         if (!result.rows[0]) {
-            console.log("here");
             throw new NotFoundError(`No job with id ${id}`);
         }
     }
