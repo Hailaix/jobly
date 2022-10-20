@@ -70,19 +70,27 @@ class Company {
    **/
 
   static async get(handle) {
-    const companyRes = await db.query(
-      `SELECT handle,
-                  name,
-                  description,
-                  num_employees AS "numEmployees",
-                  logo_url AS "logoUrl"
-           FROM companies
-           WHERE handle = $1`,
-      [handle]);
+    const companyRes = await db.query(`
+    SELECT 
+      handle, 
+      name, 
+      description,
+      num_employees AS "numEmployees",
+      logo_url AS "logoUrl"
+    FROM companies
+    WHERE handle = $1
+    `, [handle]);
 
     const company = companyRes.rows[0];
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);
+
+    const jobRes = await db.query(`
+    SELECT id, title, salary, equity, company_handle AS "companyHandle"
+    FROM jobs
+    WHERE company_handle = $1`, [handle]);
+
+    company.jobs = jobRes.rows;
 
     return company;
   }
@@ -148,9 +156,9 @@ class Company {
    */
   static async findSome(filters = {}) {
     const { name, minEmployees, maxEmployees } = filters;
-    
+
     //will be false if either are undefined
-    if(minEmployees > maxEmployees){
+    if (minEmployees > maxEmployees) {
       throw new BadRequestError("min set above max");
     }
     //base query
@@ -159,25 +167,25 @@ class Company {
     FROM companies`;
     const where = [];
     const parameters = [];
-    
-    if(name){
+
+    if (name) {
       parameters.push(`%${name}%`);
       where.push(`name ILIKE $${parameters.length}`);
     }
-    if(minEmployees !== undefined){
+    if (minEmployees !== undefined) {
       //push returns length
       where.push(`num_employees >= $${parameters.push(minEmployees)}`);
     }
-    if(maxEmployees !== undefined){
+    if (maxEmployees !== undefined) {
       where.push(`num_employees <= $${parameters.push(maxEmployees)}`);
     }
 
     //if any filter matched, add the where clause
-    if(where.length > 0){
+    if (where.length > 0) {
       query += (" WHERE " + where.join(" AND "));
     }
     query += " ORDER BY name"
-    const companiesRes = await db.query(query,parameters);
+    const companiesRes = await db.query(query, parameters);
     return companiesRes.rows;
   };
 
