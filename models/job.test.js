@@ -2,7 +2,7 @@
 
 const db = require("../db.js");
 const { BadRequestError, NotFoundError } = require("../expressError");
-const Job = require('./job.js');
+const Job = require('./job');
 const {
     commonBeforeAll,
     commonBeforeEach,
@@ -65,7 +65,7 @@ describe("find", function () {
                 equity: '0',
                 companyHandle: 'c1'
             }
-        ])
+        ]);
     });
 
     test("works: all filters", async function () {

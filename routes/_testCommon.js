@@ -4,6 +4,9 @@ const db = require("../db.js");
 const User = require("../models/user");
 const Company = require("../models/company");
 const { createToken } = require("../helpers/tokens");
+const Job = require("../models/job.js");
+
+const jobIds = [];
 
 async function commonBeforeAll() {
   // noinspection SqlWithoutWhere
@@ -12,29 +15,29 @@ async function commonBeforeAll() {
   await db.query("DELETE FROM companies");
 
   await Company.create(
-      {
-        handle: "c1",
-        name: "C1",
-        numEmployees: 1,
-        description: "Desc1",
-        logoUrl: "http://c1.img",
-      });
+    {
+      handle: "c1",
+      name: "C1",
+      numEmployees: 1,
+      description: "Desc1",
+      logoUrl: "http://c1.img",
+    });
   await Company.create(
-      {
-        handle: "c2",
-        name: "C2",
-        numEmployees: 2,
-        description: "Desc2",
-        logoUrl: "http://c2.img",
-      });
+    {
+      handle: "c2",
+      name: "C2",
+      numEmployees: 2,
+      description: "Desc2",
+      logoUrl: "http://c2.img",
+    });
   await Company.create(
-      {
-        handle: "c3",
-        name: "C3",
-        numEmployees: 3,
-        description: "Desc3",
-        logoUrl: "http://c3.img",
-      });
+    {
+      handle: "c3",
+      name: "C3",
+      numEmployees: 3,
+      description: "Desc3",
+      logoUrl: "http://c3.img",
+    });
 
   await User.register({
     username: "u1",
@@ -60,6 +63,30 @@ async function commonBeforeAll() {
     password: "password3",
     isAdmin: false,
   });
+
+  //jobs
+  jobIds.length = 0;
+  const j1 = await Job.create({
+    title: 'j1',
+    salary: 10000,
+    equity: '0.1',
+    companyHandle: 'c1'
+  });
+  jobIds.push(j1.id);
+  const j2 = await Job.create({
+    title: 'j2',
+    salary: 20000,
+    equity: '0.2',
+    companyHandle: 'c2'
+  });
+  jobIds.push(j2.id);
+  const j3 = await Job.create({
+    title: 'j3',
+    salary: 30000,
+    equity: '0',
+    companyHandle: 'c1'
+  });
+  jobIds.push(j3.id);
 }
 
 async function commonBeforeEach() {
@@ -85,5 +112,6 @@ module.exports = {
   commonAfterEach,
   commonAfterAll,
   u1Token,
-  adminToken
+  adminToken,
+  jobIds
 };
